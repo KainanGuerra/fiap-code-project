@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2020",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@Modules/*": [
+        "src/modules/*"
+      ],
+      "@Common/*": [
+        "src/common/*"
+      ],
+      "@Config/*": [
+        "src/config/*"
+      ],
+      "@Utils/*": [
+        "src/shared/utils/*"
+      ],
+      "@Shared/*": [
+        "src/shared/*"
+      ],
+      "@Specs/*": [
+        "specs/*"
+      ],
+      "@App/*": [
+        "src/*"
+      ]
+    },
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+  },
+  "include": [
+    "./package.json",
+    "./libs/**/*",
+    "./src/**/*",
+    "./specs/**/*",
+    "./ormconfig.ts",
+    "./eslint.config.mjs",
+    "./jest-feature-config.ts",
+    "./jest-unit-config.ts",
+    "./jest.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+}

@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      PGPORT: ${PGPORT-5432}
+      POSTGRES_DB: ${DB_NAME-db}
+      POSTGRES_USER: ${DB_USER-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD-postgres}
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    command: npm run start:dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=db
+      - JWT_SECRET=super_secret_jwt_key
+      - JWT_EXPIRES_IN=1d
+    depends_on:
+      - pgadmin
+      - db
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "6001:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
+  pgadmin-data:
