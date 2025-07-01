@@ -11,7 +11,7 @@ import {
   StatusUser,
   StatusUserAction,
   StatusUserActionFns,
-} from './costants/status.user';
+} from './constants/status.user';
 
 export interface UserEntity {
   fsmStatus(): IStateMachine & StatusUserActionFns;
