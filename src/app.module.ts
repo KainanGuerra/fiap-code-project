@@ -8,6 +8,7 @@ import { AuthModule } from '@Modules/blog/auth/auth.module';
 import { PostModule } from '@Modules/blog/post/post.module';
 import { StatusModule } from '@Modules/status/status.module';
 import { InnerAuthorizeGuard } from '@Shared/guards/inner.authorize.guard';
+import { SnakeNamingStrategy } from '@Common/snake-naming.strategy';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { InnerAuthorizeGuard } from '@Shared/guards/inner.authorize.guard';
         database: config.get('DB_NAME'),
         autoLoadEntities: true,
         synchronize: false,
+        namingStrategy: new SnakeNamingStrategy(),
       }),
     }),
   ],
