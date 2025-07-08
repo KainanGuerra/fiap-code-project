@@ -4,11 +4,11 @@ import { APP_GUARD, ModulesContainer, Reflector } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 
+import { SnakeNamingStrategy } from '@Common/snake-naming.strategy';
 import { AuthModule } from '@Modules/blog/auth/auth.module';
 import { PostModule } from '@Modules/blog/post/post.module';
 import { StatusModule } from '@Modules/status/status.module';
 import { InnerAuthorizeGuard } from '@Shared/guards/inner.authorize.guard';
-import { SnakeNamingStrategy } from '@Common/snake-naming.strategy';
 
 @Module({
   imports: [

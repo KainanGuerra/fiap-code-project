@@ -8,7 +8,6 @@ export const validateInnerAuth = (
   const innerAuthTokenFromRequest = request.headers[
     'inner-authorization'
   ] as string;
-
   if (innerAuthTokenFromRequest !== innerAuthToken) {
     throw new UnauthorizedException();
   }

@@ -1,12 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash, compare } from 'bcrypt';
+import { Logger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 
-import { AuthRoles } from '@Shared/constants/auth.roles.constant';
-
+import { StatusUser } from '../costants/status.user';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { UserEntity } from '../user.entity';
 
 @Injectable()
@@ -16,13 +21,31 @@ export class AuthService {
     private readonly repo: Repository<UserEntity>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly logger: Logger,
   ) {}
 
-  async register(data: { email: string; password: string; role: AuthRoles }) {
-    const hashedPassword = await hash(data.password, 10);
-    const user = this.repo.create({ ...data, password: hashedPassword });
-    await this.repo.save(user);
-    return this.createToken(user);
+  async register(data: CreateUserDto) {
+    try {
+      const hashedPassword = await hash(data.password, 10);
+      const user = await this.repo.save({
+        ...data,
+        password: hashedPassword,
+        status: StatusUser.PENDING,
+      });
+      console.debug(user);
+      return this.createToken(user);
+    } catch (err) {
+      this.logger.error(`[CREATE USER ERROR]: ${JSON.stringify(err)}`);
+      throw new BadRequestException();
+    }
+  }
+
+  list() {
+    return this.repo.find();
+  }
+
+  async remove(data: UserEntity) {
+    await this.repo.softDelete(data.id);
   }
 
   async login(email: string, password: string) {
