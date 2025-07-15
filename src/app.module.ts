@@ -1,6 +1,11 @@
 import { Module, OnApplicationBootstrap, Scope } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD, ModulesContainer, Reflector } from '@nestjs/core';
+import {
+  APP_GUARD,
+  APP_INTERCEPTOR,
+  ModulesContainer,
+  Reflector,
+} from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 
@@ -9,6 +14,7 @@ import { AuthModule } from '@Modules/blog/auth/auth.module';
 import { PostModule } from '@Modules/blog/post/post.module';
 import { StatusModule } from '@Modules/status/status.module';
 import { InnerAuthorizeGuard } from '@Shared/guards/inner.authorize.guard';
+import { ClassSerializerGuardInterceptor } from '@Shared/interceptors/class.serializer.interceptor';
 
 @Module({
   imports: [
@@ -48,6 +54,10 @@ import { InnerAuthorizeGuard } from '@Shared/guards/inner.authorize.guard';
     }),
   ],
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerGuardInterceptor,
+    },
     {
       provide: APP_GUARD,
       scope: Scope.REQUEST,

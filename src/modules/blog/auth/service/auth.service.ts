@@ -10,6 +10,8 @@ import { hash, compare } from 'bcrypt';
 import { Logger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 
+import { InternalUserInformation } from '@Shared/interfaces/auth.interface';
+
 import { StatusUser } from '../costants/status.user';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserEntity } from '../user.entity';
@@ -63,22 +65,27 @@ export class AuthService {
       role: user.role,
     };
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(
+        payload,
+        // TIP: can set jwt token expiration time here or on jwt auth module
+        //{ expiresIn: '15m' }
+      ),
       user,
     };
   }
 
-  async authenticateToken(headers: Record<string, any>, expectedType: 'user') {
+  async authenticateToken(headers: Record<string, any>) {
     const authHeader = headers['authorization'];
     if (!authHeader?.startsWith('Bearer ')) throw new UnauthorizedException();
 
     const token = authHeader.split(' ')[1];
-    const payload = this.jwtService.verify(token, {
+    const payload: InternalUserInformation = this.jwtService.verify(token, {
       secret: this.configService.getOrThrow('JWT_SECRET'),
     });
+    const user = await this.repo.findOneByOrFail({ email: payload.email });
 
     return {
-      user: payload,
+      user,
     };
   }
 }

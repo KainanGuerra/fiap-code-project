@@ -1,4 +1,4 @@
-import { InternalUserInformation } from '@Shared/interfaces/auth.interface';
+import { UserEntity } from '@Modules/blog/auth/user.entity';
 
 export enum StateRole {
   INTERNAL = 'internal',
@@ -15,8 +15,8 @@ declare module 'fastify' {
         }
       | {
           strategy: 'authorized';
-          user: InternalUserInformation;
-          role?: StateRole.PROFESSOR | StateRole.STUDENT;
+          user: UserEntity;
+          role: StateRole.PROFESSOR | StateRole.STUDENT;
         };
   }
 }

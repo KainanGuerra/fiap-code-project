@@ -8,7 +8,9 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 
+import { StateRole } from '@App/@types/FastifyRequest';
 import { AuthService } from '@Modules/blog/auth/service/auth.service';
+import { AuthRoles } from '@Shared/constants/auth.roles.constant';
 import { IS_USER_KEY } from '@Shared/decorators';
 
 import { PublicAuthorizeGuard } from './public.authorize.guard';
@@ -39,19 +41,19 @@ export class UserAuthorizeGuard
     }
 
     try {
-      const userPayload = await this.authService.authenticateToken(
-        request.headers,
-        'user',
-      );
-
+      const data = await this.authService.authenticateToken(request.headers);
+      const role = data.user.role;
       request.state = {
+        role:
+          role === AuthRoles.professor
+            ? StateRole.PROFESSOR
+            : StateRole.STUDENT,
         strategy: 'authorized',
-        ...userPayload,
+        ...data,
       };
-      console.debug('hello my friend');
 
       return true;
-    } catch (error) {
+    } catch (err) {
       throw new UnauthorizedException('Invalid user token');
     }
   }
