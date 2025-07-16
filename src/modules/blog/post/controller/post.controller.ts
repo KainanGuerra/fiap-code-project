@@ -1,20 +1,29 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
+  Delete,
   ForbiddenException,
   Get,
   Inject,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 
 import { InnerAuthorize, UserAuthorize } from '@Shared/decorators';
+import { EntityByIdPipe } from '@Shared/pipes/entity-by-id.pipe';
 
 import { CreatePostDTO } from '../dto/create-post.dto';
+import { GetPostsDTO } from '../dto/get-posts-dto';
 import { ResponseManyPostsDTO } from '../dto/response-many-posts.dto';
 import { ResponsePostDTO } from '../dto/response-post.dto';
+import { UpdatePostDTO } from '../dto/update-post.dto';
+import { PostEntity } from '../post.entity';
 import { PostService } from '../services/post.service';
 
 @InnerAuthorize()
@@ -27,18 +36,49 @@ export class PublicationController {
   ) {}
 
   @Get()
-  async find() {
+  async find(
+    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query() query: GetPostsDTO,
+  ) {
     const { strategy } = this.request.state;
     if (['authorized', 'inner'].includes(strategy)) {
       const user =
         'authorized' === strategy ? this.request.state.user : undefined;
-      return new ResponseManyPostsDTO(await this.service.find(user));
+      return new ResponseManyPostsDTO(
+        await this.service.find({ limit, page }, user, query),
+      );
+    }
+    throw new ForbiddenException();
+  }
+
+  // TODO: Ask if using default find route is allowed for params
+  @Get('search')
+  async findWithParams(
+    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query() query: GetPostsDTO,
+  ) {
+    const { strategy } = this.request.state;
+    if (['authorized', 'inner'].includes(strategy)) {
+      const user =
+        'authorized' === strategy ? this.request.state.user : undefined;
+      return new ResponseManyPostsDTO(
+        await this.service.find({ limit, page }, user, query),
+      );
     }
     throw new ForbiddenException();
   }
 
   @Get(':id')
-  findOne() {}
+  findOne(@Param('id', EntityByIdPipe<PostEntity>) post: PostEntity) {
+    const { strategy } = this.request.state;
+
+    if (['authorized', 'inner'].includes(strategy)) {
+      return new ResponsePostDTO(post);
+    }
+    throw new ForbiddenException();
+  }
 
   @Post()
   async create(@Body() payload: CreatePostDTO) {
@@ -54,6 +94,30 @@ export class PublicationController {
     throw new ForbiddenException();
   }
 
-  @Patch()
-  patch() {}
+  //TODO: ask if using patch is allowed
+  @Patch(':id')
+  async update(
+    @Param('id', EntityByIdPipe<PostEntity>) post: PostEntity,
+    @Body() payload: UpdatePostDTO,
+  ) {
+    const { strategy } = this.request.state;
+
+    if (['authorized', 'inner'].includes(strategy)) {
+      const data = await this.service.update(payload, post);
+      return new ResponsePostDTO(data);
+    }
+    throw new ForbiddenException();
+  }
+
+  //TODO: ask if using patch is allowed
+  @Delete(':id')
+  async remove(@Param('id', EntityByIdPipe<PostEntity>) post: PostEntity) {
+    const { strategy } = this.request.state;
+
+    if (['authorized', 'inner'].includes(strategy)) {
+      const data = await this.service.softRemove(post);
+      return new ResponsePostDTO(data);
+    }
+    throw new ForbiddenException();
+  }
 }

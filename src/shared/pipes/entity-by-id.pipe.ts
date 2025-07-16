@@ -1,5 +1,6 @@
 import {
   ArgumentMetadata,
+  ForbiddenException,
   Inject,
   Injectable,
   NotAcceptableException,
@@ -9,6 +10,8 @@ import {
 import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 import { DataSource } from 'typeorm';
+
+import { PostEntity } from '@Modules/blog/post/post.entity';
 
 const pattern = /^([a-z]+_)?[0-9a-hjkmnp-tv-z]{26}$/;
 
@@ -38,6 +41,16 @@ export class EntityByIdPipe<T> implements PipeTransform<string, Promise<T>> {
         },
         loadEagerRelations: true,
       })) as T;
+
+    if (entity instanceof PostEntity) {
+      const logged = this.request?.state;
+      if (
+        logged?.strategy === 'authorized' &&
+        String(logged.user.id) !== entity.user.id
+      ) {
+        throw new ForbiddenException('Can not have access to this post entity');
+      }
+    }
 
     if (!entity) {
       throw new NotFoundException(
