@@ -3,7 +3,7 @@ services:
     image: postgres:15
     environment:
       PGPORT: ${PGPORT-5432}
-      POSTGRES_DB: ${DB_NAME-db}
+      POSTGRES_DB: ${DB_NAME-postly}
       POSTGRES_USER: ${DB_USER-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD-postgres}
     ports:
@@ -11,9 +11,43 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  db-test:
+    image: postgres:15
+    environment:
+      PGPORT: ${PGPORT-5432}
+      POSTGRES_DB: ${DB_NAME-postly}
+      POSTGRES_USER: ${DB_USER-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD-postgres}
+    ports:
+      - "5433:5432"    # Expose on 5433 locally to avoid conflict
+    volumes:
+      - pgdata_test:/var/lib/postgresql/data
+
+
   app:
     build: .
     command: npm run start:dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=db
+      - JWT_SECRET=super_secret_jwt_key
+      - JWT_EXPIRES_IN=1d
+    depends_on:
+      - pgadmin
+      - db
+
+  specs:
+    build: .
+    command: npm run test
     volumes:
       - .:/app
       - /app/node_modules
@@ -47,3 +81,5 @@ services:
 volumes:
   pgdata:
   pgadmin-data:
+  pgdata_test:
+
