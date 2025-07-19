@@ -22,7 +22,6 @@ jobs:
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
-          file: .
           push: true
           tags: |
             kainanguerra1/fiap_fase_2:v1
