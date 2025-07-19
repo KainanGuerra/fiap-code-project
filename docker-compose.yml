@@ -38,7 +38,7 @@ services:
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-      - DB_NAME=db
+      - DB_NAME=postly
       - JWT_SECRET=super_secret_jwt_key
       - JWT_EXPIRES_IN=1d
     depends_on:
@@ -59,7 +59,7 @@ services:
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-      - DB_NAME=db
+      - DB_NAME=postly
       - JWT_SECRET=super_secret_jwt_key
       - JWT_EXPIRES_IN=1d
     depends_on:
