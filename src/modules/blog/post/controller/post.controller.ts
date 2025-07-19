@@ -15,6 +15,7 @@ import {
 import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 
+import { StateRole } from '@App/@types/FastifyRequest';
 import { InnerAuthorize, UserAuthorize } from '@Shared/decorators';
 import { EntityByIdPipe } from '@Shared/pipes/entity-by-id.pipe';
 
@@ -82,9 +83,9 @@ export class PublicationController {
 
   @Post()
   async create(@Body() payload: CreatePostDTO) {
-    const { strategy } = this.request.state;
+    const { strategy, role } = this.request.state;
 
-    if ('authorized' === strategy) {
+    if ('authorized' === strategy && role === StateRole.PROFESSOR) {
       const data = await this.service.create(
         payload,
         this.request?.state?.user,
