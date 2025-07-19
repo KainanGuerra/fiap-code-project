@@ -12,7 +12,8 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
     "paths": {
       "@Modules/*": [
@@ -56,7 +57,7 @@
     "./eslint.config.mjs",
     "./jest-feature-config.ts",
     "./jest-unit-config.ts",
-    "./jest.config.ts"
+    "jest.config.js"
   ],
   "exclude": [
     "node_modules",
