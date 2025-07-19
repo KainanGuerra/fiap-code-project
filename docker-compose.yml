@@ -46,7 +46,9 @@ services:
       - db
 
   specs:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile.specs
     command: npm run test
     volumes:
       - .:/app
