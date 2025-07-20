@@ -1,16 +1,28 @@
 services:
   db:
     image: postgres:15
-    restart: always
     environment:
       PGPORT: ${PGPORT-5432}
-      POSTGRES_DB: ${DB_NAME-db}
-      POSTGRES_USER: ${DB_USER-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD-postgres}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  db-test:
+    image: postgres:15
+    environment:
+      PGPORT: ${PGPORT}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"    # Expose on 5433 locally to avoid conflict
+    volumes:
+      - pgdata_test:/var/lib/postgresql/data
+
 
   app:
     build: .
@@ -21,13 +33,36 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - PORT=3000
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=db
-      - JWT_SECRET=super_secret_jwt_key
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=1d
+    depends_on:
+      - pgadmin
+      - db
+
+  specs:
+    build: 
+      context: .
+      dockerfile: Dockerfile.specs
+    command: npm run test
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=1d
     depends_on:
       - pgadmin
@@ -35,12 +70,11 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    restart: always
     ports:
       - "6001:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
@@ -49,3 +83,5 @@ services:
 volumes:
   pgdata:
   pgadmin-data:
+  pgdata_test:
+

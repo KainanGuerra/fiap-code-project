@@ -20,6 +20,7 @@ export class PostEntity extends MetadataModel<PostEntity> {
 
   @ManyToOne(() => UserEntity, {
     eager: true,
+    nullable: false,
   })
   @JoinColumn({
     foreignKeyConstraintName: 'fk_post_id_user_id',

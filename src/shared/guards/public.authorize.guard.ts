@@ -17,6 +17,7 @@ export class PublicAuthorizeGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+
     if (isPublic) {
       return Promise.resolve(true);
     }

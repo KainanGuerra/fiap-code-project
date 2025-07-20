@@ -9,27 +9,38 @@ import { Reflector } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 
 import { StateRole } from '@App/@types/FastifyRequest';
+import { AuthService } from '@Modules/blog/auth/service/auth.service';
 import { IS_INNER_KEY } from '@Shared/decorators';
 
+import { UserAuthorizeGuard } from './user.authorize.guard';
 import { validateInnerAuth } from './utils';
 
 @Injectable()
-export class InnerAuthorizeGuard implements CanActivate {
+export class InnerAuthorizeGuard
+  extends UserAuthorizeGuard
+  implements CanActivate
+{
   constructor(
-    protected readonly configService: ConfigService,
     protected readonly reflector: Reflector,
-  ) {}
+    protected readonly authService: AuthService,
+    protected readonly configService: ConfigService,
+  ) {
+    super(reflector, authService, configService);
+  }
 
-  canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<FastifyRequest>();
 
     const isInner = !!this.reflector.getAllAndOverride(IS_INNER_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
+    const innerAuthTokenFromRequest = request.headers[
+      'inner-authorization'
+    ] as string;
 
-    if (!isInner) {
-      return true;
+    if (!isInner || !innerAuthTokenFromRequest) {
+      return super.canActivate(context);
     }
 
     const innerAuthToken = this.configService.getOrThrow<string>('INNER_AUTH');
@@ -43,6 +54,6 @@ export class InnerAuthorizeGuard implements CanActivate {
       role: StateRole.INTERNAL,
     };
 
-    return true;
+    return Promise.resolve(true);
   }
 }

@@ -1,0 +1,27 @@
+# Dockerfile.specs
+
+FROM node:20-alpine
+
+# Instala dependências do sistema necessárias para Jest e TypeORM
+RUN apk add --no-cache \
+  python3 \
+  make \
+  g++ \
+  libc6-compat
+
+WORKDIR /app
+
+# Copia arquivos de dependência
+COPY package*.json ./
+
+# Instala dependências
+RUN npm install
+
+# Copia o restante do projeto, incluindo a pasta specs/
+COPY . .
+
+# Compila o código TypeScript
+RUN npm run build
+
+# Executa os testes
+CMD ["npm", "run", "test"]
