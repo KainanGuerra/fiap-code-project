@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   DefaultValuePipe,
-  Delete,
   ForbiddenException,
   Get,
   Inject,
@@ -53,24 +52,6 @@ export class PublicationController {
     throw new ForbiddenException();
   }
 
-  // TODO: Ask if using default find route is allowed for params
-  @Get('search')
-  async findWithParams(
-    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query() query: GetPostsDTO,
-  ) {
-    const { strategy } = this.request.state;
-    if (['authorized', 'inner'].includes(strategy)) {
-      const user =
-        'authorized' === strategy ? this.request.state.user : undefined;
-      return new ResponseManyPostsDTO(
-        await this.service.find({ limit, page }, user, query),
-      );
-    }
-    throw new ForbiddenException();
-  }
-
   @Get(':id')
   findOne(@Param('id', EntityByIdPipe<PostEntity>) post: PostEntity) {
     const { strategy } = this.request.state;
@@ -95,7 +76,6 @@ export class PublicationController {
     throw new ForbiddenException();
   }
 
-  //TODO: ask if using patch is allowed
   @Patch(':id')
   async update(
     @Param('id', EntityByIdPipe<PostEntity>) post: PostEntity,
@@ -110,8 +90,7 @@ export class PublicationController {
     throw new ForbiddenException();
   }
 
-  //TODO: ask if using patch is allowed
-  @Delete(':id')
+  @Patch(':id/remove')
   async remove(@Param('id', EntityByIdPipe<PostEntity>) post: PostEntity) {
     const { strategy } = this.request.state;
 
