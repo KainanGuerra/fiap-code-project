@@ -2,7 +2,7 @@ import request from 'supertest';
 import { e2eDescribe } from './utils/e2e-wrapper';
 
 e2eDescribe('AuthController (e2e)', (app) => {
-    // Dados do Usuario
+    // Teste Login user
     it('POST /auth/sign-in should sign-in with a user', async () => {
         const loginDto = {
             email: 'test2@example.com',
