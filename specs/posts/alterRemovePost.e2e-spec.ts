@@ -43,7 +43,7 @@ e2eDescribe('PostController (e2e)', (app) => {
     expect(patchRes.body.title).toBe(updatedPost.title);
     expect(patchRes.body.content).toBe(updatedPost.content);
   });
-/*
+
   it('PATCH /posts/:id/remove should remove a post by ID', async () => {
     const deleteRes = await request(app().getHttpServer())
       .patch(`/posts/${postId}/remove`)
@@ -54,7 +54,7 @@ e2eDescribe('PostController (e2e)', (app) => {
     const getRes = await request(app().getHttpServer())
       .get(`/posts/${postId}`)
       .set('inner-authorization', process.env.INNER_AUTH!);
-
-    expect(getRes.status).toBe(404); // ou 200 + deleted flag, depende da lógica
-  });*/
+    console.debug("Cheguei");
+    expect(getRes.status).toBe(404);
+  });
 });
