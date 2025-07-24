@@ -45,11 +45,9 @@ export class PostService {
       where: [
         {
           ...(term ? { title: Like(term) } : {}),
-          ...(user ? { user: { id: user.id } } : {}),
         },
         {
           ...(term ? { content: Like(term) } : {}),
-          ...(user ? { user: { id: user.id } } : {}),
         },
       ],
       take: limit,

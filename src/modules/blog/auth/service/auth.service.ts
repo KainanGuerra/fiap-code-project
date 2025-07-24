@@ -38,7 +38,7 @@ export class AuthService {
       return this.createToken(user);
     } catch (err) {
       this.logger.error(`[CREATE USER ERROR]: ${JSON.stringify(err)}`);
-      throw new BadRequestException();
+      throw new BadRequestException('Email is already registered');
     }
   }
 
