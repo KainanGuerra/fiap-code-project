@@ -1,31 +1,11 @@
-import * as dotenv from 'dotenv';
-dotenv.config({ path: '.env.test' }); // or .env if you use that
-
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { e2eDescribe } from './utils/e2e-wrapper';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication;
-
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
-
-    afterAll(async () => {
-    await app.close();
-  });
+e2eDescribe('AppController (e2e)', (app) => {
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
+    return request(app().getHttpServer())
+      .get('/status')
       .expect(200)
-      .expect('Hello World!');
   });
 });

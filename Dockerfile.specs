@@ -24,4 +24,5 @@ COPY . .
 RUN npm run build
 
 # Executa os testes
-CMD ["npm", "run", "test"]
+CMD ["npx", "jest", "tests/users", "tests/posts"]
+

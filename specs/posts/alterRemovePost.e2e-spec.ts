@@ -54,7 +54,6 @@ e2eDescribe('PostController (e2e)', (app) => {
     const getRes = await request(app().getHttpServer())
       .get(`/posts/${postId}`)
       .set('inner-authorization', process.env.INNER_AUTH!);
-    console.debug("Cheguei");
     expect(getRes.status).toBe(404);
   });
 });
