@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { e2eDescribe } from './utils/e2e-wrapper';
+import { e2eDescribe } from '../utils/e2e-wrapper';
 
 e2eDescribe('AuthController (e2e)', (app) => {
     // Dados do Usuario
