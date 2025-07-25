@@ -29,7 +29,7 @@ jobs:
         run: |
           docker compose up -d --scale db-test=0
           # Aguarda o banco de dados ficar pronto antes de rodar os testes
-          until [ "$(docker inspect -f '{{.State.Health.Status}}' nome-do-container)" == "healthy" ]; do
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' db-1)" == "healthy" ]; do
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
