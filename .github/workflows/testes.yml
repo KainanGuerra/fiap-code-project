@@ -17,6 +17,8 @@ jobs:
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_SCHEMA: "blog"
 
     steps:
       - name: Checkout repository
@@ -37,6 +39,8 @@ jobs:
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
+
+          docker exec $(docker ps -qf "name=db") psql -U $DB_USER -d $DB_NAME -c "CREATE SCHEMA IF NOT EXISTS $DB_SCHEMA;"
 
       - name: Run migrations
         run: docker compose exec app yarn typeorm migration:run -d ormconfig.ts
