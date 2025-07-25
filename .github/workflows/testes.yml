@@ -27,7 +27,7 @@ jobs:
 
       - name: Build and start services with Docker Compose
         run: |
-          docker-compose up -d --scale db-test=0
+          docker compose up -d --scale db-test=0
           # Aguarda o banco de dados ficar pronto antes de rodar os testes
           until docker exec $(docker ps -qf "name=db") pg_isready -U $DB_USER; do
             echo "Waiting for PostgreSQL..."
@@ -35,7 +35,7 @@ jobs:
           done
 
       - name: Run tests
-        run: docker-compose run --rm specs
+        run: docker compose run --rm specs
 
       - name: Shut down Docker Compose
-        run: docker-compose down
+        run: docker compose down
