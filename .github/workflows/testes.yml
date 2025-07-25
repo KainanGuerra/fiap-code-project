@@ -1,15 +1,13 @@
 name: CI Pipeline Tests
 
 on:
-  push:
-    branches:
-      - criacao-testes
+  workflow_dispatch:
 
 jobs:
   docker-tests:
     runs-on: ubuntu-latest
-
-    env:
+        ##Ir em settings > Secrets and Variables > Actions > New repository secret e configurar as secrets conforme o arquivo .env
+    env: 
       DB_HOST: db
       DB_PORT: 5432
       POSTGRES_DB: ${{ secrets.DB_NAME }}
