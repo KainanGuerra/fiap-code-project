@@ -3,24 +3,20 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main
       - criacao-testes
 
 jobs:
-  test-and-build:
+  docker-tests:
     runs-on: ubuntu-latest
 
     # Definindo serviços necessários
-    services:
-      db:
-        image: postgres:15
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        options: --health-cmd="pg_isready -U ${DB_USER}" --health-timeout=30s --health-retries=5 --health-interval=5s
+    env:
+       DB_HOST: ${{secrets.DB_HOST}}
+       DB_PORT: 5432:5432
+       POSTGRES_DB: ${{ secrets.DB_NAME }}
+       POSTGRES_USER: ${{ secrets.DB_USER }}
+       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+       options: --health-cmd="pg_isready -U ${DB_USER}" --health-timeout=30s --health-retries=5 --health-interval=5s
 
     steps:
       - name: Checkout repository
@@ -31,15 +27,15 @@ jobs:
 
       - name: Build and start services with Docker Compose
         run: |
-          docker-compose -f docker-compose.yml up -d --build || echo "Ignoring failure in container startup"
+          docker-compose up -d --scale db-test=0
           # Aguarda o banco de dados ficar pronto antes de rodar os testes
-          until docker exec $(docker ps -qf "name=db") pg_isready -U ${{ secrets.DB_USER }}; do
+          until docker exec $(docker ps -qf "name=db") pg_isready -U $DB_USER; do
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
 
       - name: Run tests
-        run: docker-compose exec specs npm run test:e2e
+        run: docker-compose run --rm specs
 
       - name: Shut down Docker Compose
         run: docker-compose down
