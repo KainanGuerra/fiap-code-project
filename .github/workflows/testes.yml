@@ -35,12 +35,13 @@ jobs:
           docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
 
           echo "Aguardando PostgreSQL iniciar..."
-          until [ "$(docker inspect -f '{{.State.Health.Status}}' db)" == "healthy" ]; do
+          until docker exec db pg_isready -U $POSTGRES_USER; do
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
 
-          docker exec $(docker ps -qf "name=db") psql -U $DB_USER -d $DB_NAME -c "CREATE SCHEMA IF NOT EXISTS $DB_SCHEMA;"
+          echo "Criando o Schema"
+          docker exec db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS blog;"
 
       - name: Run migrations
         run: docker compose exec app yarn typeorm migration:run -d ormconfig.ts
