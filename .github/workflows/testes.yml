@@ -38,6 +38,9 @@ jobs:
             sleep 2
           done
 
+      - name: Run migrations
+        run: docker compose exec app yarn typeorm migration:run -d ormconfig.ts
+
       - name: Run tests
         run: docker compose run --rm specs
 
