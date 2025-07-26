@@ -20,7 +20,7 @@
     "start:dev:worker": "TZ=UTC nest start --config nest-cli-worker.json --tsc --watch",
     "start:dev:remittance:worker": "TZ=UTC nest start --config nest-cli-remittance-worker.json --tsc --watch",
     "debug": "nest start --debug 0.0.0.0:9229 --watch",
-    "prod": "node main",
+    "start:prod": "node dist/main",
     "lint": "yarn eslint \"{src,apps,libs,specs}/**/*.ts\" --quiet --cache --cache-strategy content",
     "lint:fix": "yarn lint --fix",
     "test": "yarn env-cmd -f .env.test node --expose-gc --no-compilation-cache --trace-warnings ./node_modules/.bin/jest --forceExit --logHeapUsage --noStackTrace",

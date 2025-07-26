@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:15
     environment:
-      PGPORT: ${PGPORT-5432}
+      PGPORT: ${DB_PORT}
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -14,7 +14,7 @@ services:
   db-test:
     image: postgres:15
     environment:
-      PGPORT: ${PGPORT}
+      PGPORT: ${DB_PORT}
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -25,7 +25,9 @@ services:
 
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     command: npm run start:dev
     volumes:
       - .:/app

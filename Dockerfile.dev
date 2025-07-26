@@ -15,4 +15,4 @@ COPY . .
 # Expose the app port (optional)
 EXPOSE 3000
 
-CMD ["yarn", "start:prod"]
+CMD ["yarn", "start:dev"]
