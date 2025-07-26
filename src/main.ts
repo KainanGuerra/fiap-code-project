@@ -44,7 +44,10 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('fiap');
 
-  await app.listen(parseInt(config.getOrThrow('PORT') ?? '3000'), '0.0.0.0');
+  await app.listen({
+    port: parseInt(config.getOrThrow('PORT') ?? '3000'),
+    host: '0.0.0.0',
+  });
   logger.log(`Application v${version} is running on: ${await app.getUrl()}`);
 }
 
