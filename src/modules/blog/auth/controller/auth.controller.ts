@@ -4,6 +4,7 @@ import { InnerAuthorize, PublicAuthorize } from '@Shared/decorators';
 import { EntityByIdPipe } from '@Shared/pipes/entity-by-id.pipe';
 
 import { CreateUserDto } from '../dto/create-user.dto';
+import { ResponseUserDTO } from '../dto/response-user.dto';
 import { SignInDto } from '../dto/sign-in.dto';
 import { AuthService } from '../service/auth.service';
 import { UserEntity } from '../user.entity';
@@ -21,7 +22,8 @@ export class AuthController {
 
   @Get()
   async list() {
-    return this.authService.list();
+    const users = await this.authService.list();
+    return users.map((user) => new ResponseUserDTO(user));
   }
 
   @Patch(':id/remove')
