@@ -17,4 +17,4 @@ EXPOSE 3000
 
 RUN yarn build
 
-CMD ["sh", "-c", "yarn db:migrate:prod && yarn start:prod"]
+CMD ["sh", "-c", "yarn start:dev"]
