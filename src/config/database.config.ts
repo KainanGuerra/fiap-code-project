@@ -27,6 +27,13 @@ const configs = <Record<string, PostgresConnectionOptions>>{
     migrationsRun: false,
     synchronize: false,
   },
+  production: {
+    ...config,
+    logging: true,
+    logger: 'debug',
+    migrationsRun: false,
+    synchronize: false,
+  },
   test: {
     ...config,
     logging: true,
