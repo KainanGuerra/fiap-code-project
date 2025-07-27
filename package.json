@@ -1,6 +1,6 @@
 {
   "name": "fiap-post-blog",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "author": "",
   "private": true,
@@ -17,7 +17,7 @@
     "dev": "nest start --tsc --watch",
     "start:dev": "nest start --watch",
     "start:dev:worker": "TZ=UTC nest start --config nest-cli-worker.json --tsc --watch",
-    "db:migrate:prod": "typeorm -d dist/ormconfig.js migration:run",
+    "db:migrate:prod": "typeorm -d dist/src/config/ormconfig-ci.js migration:run",
     "start:prod": "node dist/main",
     "debug": "nest start --debug 0.0.0.0:9229 --watch",
     "lint": "yarn eslint \"{src,apps,libs,specs}/**/*.ts\" --quiet --cache --cache-strategy content",
