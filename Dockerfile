@@ -15,4 +15,4 @@ COPY . .
 # Expose the app port (optional)
 EXPOSE 3000
 
-CMD ["sh", "-c", "yarn db:migrate && yarn start:dev"]
+CMD ["sh", "-c", "yarn db:migrate:prod && yarn start:dev"]
