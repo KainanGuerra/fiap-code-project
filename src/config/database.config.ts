@@ -29,10 +29,11 @@ const configs = <Record<string, PostgresConnectionOptions>>{
   },
   production: {
     ...config,
-    logging: true,
-    logger: 'debug',
-    migrationsRun: false,
-    synchronize: false,
+    logging: false,
+    migrationsRun: true,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
   test: {
     ...config,
