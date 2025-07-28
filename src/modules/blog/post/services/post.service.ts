@@ -56,8 +56,4 @@ export class PostService {
 
     return { page, limit, posts, totalPosts: count };
   }
-
-  findOne() {}
-
-  patch() {}
 }

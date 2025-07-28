@@ -8,7 +8,7 @@ export class CreateFirstTables1750688983928 implements MigrationInterface {
       `CREATE TABLE "blog"."posts" ("created_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "internal_comment" character varying(300), "metadata" jsonb, "id" character varying NOT NULL DEFAULT generate_ulid('pst'), "title" character varying NOT NULL, "content" character varying NOT NULL, CONSTRAINT "pk_post_id" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE INDEX "idx_posts_created_at" ON "blog"."posts" ("created_at") `,
+      `CREATE INDEX "idx_posts_created_at" ON "blog"."posts" ("created_at")`,
     );
     await queryRunner.query(
       `CREATE INDEX "idx_posts_deleted_at" ON "blog"."posts" ("deleted_at") `,

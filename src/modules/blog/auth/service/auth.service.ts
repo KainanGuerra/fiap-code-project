@@ -14,6 +14,7 @@ import { InternalUserInformation } from '@Shared/interfaces/auth.interface';
 
 import { StatusUser } from '../costants/status.user';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { ResponseUserDTO } from '../dto/response-user.dto';
 import { UserEntity } from '../user.entity';
 
 @Injectable()
@@ -34,7 +35,6 @@ export class AuthService {
         password: hashedPassword,
         status: StatusUser.PENDING,
       });
-      console.debug(user);
       return this.createToken(user);
     } catch (err) {
       this.logger.error(`[CREATE USER ERROR]: ${JSON.stringify(err)}`);
@@ -70,7 +70,7 @@ export class AuthService {
         // TIP: can set jwt token expiration time here or on jwt auth module
         //{ expiresIn: '15m' }
       ),
-      user,
+      user: new ResponseUserDTO(user),
     };
   }
 

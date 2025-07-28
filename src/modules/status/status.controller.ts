@@ -16,6 +16,7 @@ export class StatusController {
   })
   @Get()
   check(): StatusDto {
+    console.debug('Status endpoint: ', new StatusDto());
     return new StatusDto();
   }
 }

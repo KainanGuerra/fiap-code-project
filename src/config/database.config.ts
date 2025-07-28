@@ -27,6 +27,14 @@ const configs = <Record<string, PostgresConnectionOptions>>{
     migrationsRun: false,
     synchronize: false,
   },
+  production: {
+    ...config,
+    logging: false,
+    migrationsRun: true,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
   test: {
     ...config,
     logging: true,
@@ -37,5 +45,6 @@ const configs = <Record<string, PostgresConnectionOptions>>{
 };
 
 export const databaseConfig = (): PostgresConnectionOptions => {
+  console.debug(process.env.NODE_ENV);
   return configs[process.env.NODE_ENV ?? 'development'];
 };
