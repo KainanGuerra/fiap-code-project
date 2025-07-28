@@ -2,17 +2,18 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Enable Yarn with corepack (Node 20+)
 RUN corepack enable
 
-# Copy dependencies and install
 COPY package*.json ./
+
 RUN yarn install
 
-# Copy rest of the project
 COPY . .
 
-# Expose the app port (optional)
+RUN yarn build
+
+RUN yarn install --production=true
+
 EXPOSE 3000
 
-CMD ["yarn", "start:dev"]
+CMD ["yarn", "start:prod"]
