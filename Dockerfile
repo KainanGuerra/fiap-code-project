@@ -15,6 +15,4 @@ COPY . .
 # Expose the app port (optional)
 EXPOSE 3000
 
-RUN yarn build
-
 CMD ["sh", "-c", "yarn start:dev"]
