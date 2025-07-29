@@ -1,4 +1,4 @@
-name: CI
+name: Specs Pipeline
 
 on:
   pull_request:   # Run CI on PR branches
