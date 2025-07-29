@@ -1,33 +1,52 @@
-name: CI
+name: CI + CD
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
-  test-and-build:
+  ci:
+    name: Run tests
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
 
-      - name: Build and run tests from Dockerfile.specs
+      - name: Build test image
+        run: docker build -f Dockerfile.specs -t test-runner .
+
+      - name: Run lint inside container
+        run: docker run --rm test-runner npm run lint
+
+      - name: Run tests inside container
+        run: docker run --rm test-runner npm run test
+
+  cd:
+    name: Build, check start:prod and deploy
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run build
+
+      - name: Check start:prod works
         run: |
-          docker build -f Dockerfile.specs -t test-runner .
-          docker run --rm test-runner
+          npm run start:prod &
+          sleep 5
+          pkill node
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3.4.0
+      - name: Docker login + push
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
 
-      - name: Build and push production image
-        uses: docker/build-push-action@v6.18.0
+      - uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: |
-            kainanguerra1/fiap_fase_2:v1
-            kainanguerra1/fiap_fase_2:latest
+          tags: kainanguerra1/fiap_fase_2:latest
+
+      - name: Trigger deploy on Render
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
