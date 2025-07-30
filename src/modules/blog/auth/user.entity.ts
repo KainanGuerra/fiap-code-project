@@ -31,14 +31,6 @@ export interface UserEntity {
       to: StatusUser.INACTIVATED,
     },
   ],
-  options: {
-    afterTransition: (param) => {
-      param.eventEmitter?.emit(
-        `vendor.status.${param.to.toLowerCase()}`,
-        param.entity,
-      );
-    },
-  },
 })
 @Check(
   generatePgName('chk_user_status', StatusUser),
