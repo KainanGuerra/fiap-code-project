@@ -9,7 +9,6 @@ e2eDescribe('AuthController (e2e)', (app) => {
             .get('/posts')
             .set('inner-authorization', process.env.INNER_AUTH!)
         expect(response.status).toBe(200);
-        console.debug('RESPONSE BODY:', response.body);
         expect(Array.isArray(response.body.docs)).toBe(true);
 
         if (response.body.length === 0) {

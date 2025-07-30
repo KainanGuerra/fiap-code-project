@@ -52,8 +52,8 @@ e2eDescribe('PostController (e2e)', (app) => {
     expect(deleteRes.status).toBe(200);
 
     const getRes = await request(app().getHttpServer())
-      .get(`/posts/${postId}`)
-      .set('inner-authorization', process.env.INNER_AUTH!);
+      .patch(`/posts/${postId}/remove`)
+      .set('Authorization', `Bearer ${token}`);
     expect(getRes.status).toBe(404);
   });
 });

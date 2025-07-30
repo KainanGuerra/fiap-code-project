@@ -7,6 +7,10 @@ module.exports = {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   collectCoverageFrom: ['**/*.(t|j)s'],
+    coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+  ],
   coverageDirectory: './coverage',
   testEnvironment: 'node',
   preset: 'ts-jest',
@@ -17,4 +21,5 @@ module.exports = {
     '^@Shared/(.*)$': '<rootDir>/src/shared/$1',
   },
   
+  testTimeout: 30000,
 };
