@@ -5,14 +5,17 @@ import { ResponsePostDTO } from './response-post.dto';
 
 @Exclude()
 export class ResponseManyPostsDTO {
+  @Expose()
   @Transform(({ obj }: { obj: { page: number } }) => obj.page)
   page: number;
 
+  @Expose()
   @Transform(({ obj }: { obj: { totalPosts: number; limit: number } }) =>
     Math.ceil(obj.totalPosts / obj.limit),
   )
   totalPages: number;
 
+  @Expose()
   @Transform(({ obj }: { obj: { posts: PostEntity[] } }) => obj.posts.length)
   docsShown: number;
 
