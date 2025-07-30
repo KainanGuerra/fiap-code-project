@@ -1,8 +1,14 @@
 {
   "name": "fiap-post-blog",
-  "version": "1.0.4",
-  "description": "",
-  "author": "",
+  "version": "1.0.6",
+  "description": "NestJs Project - Fiap Post-Tech",
+  "author": "Kainan Guerra (https://www.linkedin.com/in/kainan-guerra)",
+  "contributors": [
+    {
+      "name": "Gabriel Alves de Melo",
+      "url": "https://www.linkedin.com/in/gabriel-melo-94b51b1a2"
+    }
+  ],
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -30,8 +36,6 @@
     "test:c": "yarn test --coverage",
     "test:u": "yarn test -c jest-unit-config.js",
     "test:f": "yarn test --detectOpenHandles --runInBand -c jest-feature-config.js",
-    "test:f:vendor": "yarn test:f specs/feature/vendor",
-    "test:f:remittance": "yarn test:f specs/feature/remittance",
     "release": "yarn semantic-release",
     "prepare": "husky install",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",

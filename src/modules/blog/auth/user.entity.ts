@@ -34,7 +34,7 @@ export interface UserEntity {
   options: {
     afterTransition: (param) => {
       param.eventEmitter?.emit(
-        `vendor.status.${param.to.toLowerCase()}`,
+        `user.status.${param.to.toLowerCase()}`,
         param.entity,
       );
     },
