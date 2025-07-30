@@ -1,8 +1,14 @@
 {
   "name": "fiap-post-blog",
-  "version": "1.0.4",
-  "description": "",
-  "author": "",
+  "version": "1.0.5",
+  "description": "NestJs Project - Fiap Post-Tech",
+  "author": "Kainan Guerra (https://www.linkedin.com/in/kainan-guerra)",
+  "contributors": [
+    {
+      "name": "Gabriel Alves de Melo",
+      "url": "https://www.linkedin.com/in/gabriel-melo-94b51b1a2"
+    }
+  ],
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

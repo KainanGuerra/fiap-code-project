@@ -1,0 +1,45 @@
+name: Deploy Pipeline
+
+on:
+  push:
+    branches: [main]  # Only triggers on merge to main
+
+jobs:
+  ci:
+    name: Run CI on main before deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build test image
+        run: docker build -f Dockerfile.specs -t test-runner .
+
+      - name: Run lint
+        run: docker run --rm test-runner npm run lint
+
+      - name: Run tests
+        run: docker run --rm test-runner npm run test
+
+  cd:
+    name: Deploy to Render
+    needs: ci  # 👈 Only runs if CI job above passes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            kainanguerra1/fiap_fase_2:latest
+
+      - name: Trigger Render deploy
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
