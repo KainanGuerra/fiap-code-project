@@ -56,4 +56,8 @@ export class PostService {
 
     return { page, limit, posts, totalPosts: count };
   }
+
+  findOne(id: string) {
+    return this.repo.findOneByOrFail({ id });
+  }
 }

@@ -53,11 +53,11 @@ export class PublicationController {
   }
 
   @Get(':id')
-  findOne(@Param('id', EntityByIdPipe<PostEntity>) post: PostEntity) {
+  async findOne(@Param('id') id: string) {
     const { strategy } = this.request.state;
 
     if (['authorized', 'inner'].includes(strategy)) {
-      return new ResponsePostDTO(post);
+      return new ResponsePostDTO(await this.service.findOne(id));
     }
     throw new ForbiddenException();
   }
