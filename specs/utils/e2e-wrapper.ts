@@ -1,10 +1,11 @@
 // test/utils/e2e-wrapper.ts
 import { INestApplication } from '@nestjs/common';
+
 import { setupE2EApp } from './setup-e2e';
 
 export function e2eDescribe(
   name: string,
-  callback: (getApp: () => INestApplication) => void
+  callback: (getApp: () => INestApplication) => void,
 ) {
   describe(name, () => {
     let app: INestApplication;

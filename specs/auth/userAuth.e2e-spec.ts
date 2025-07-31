@@ -1,9 +1,15 @@
 import request from 'supertest';
+
 import { e2eDescribe } from '../utils/e2e-wrapper';
 import { generateTestUser } from '../utils/generate-user';
 
 e2eDescribe('AuthController (e2e)', (app) => {
-  let createdUser: { email: string; password: string; name: string; role: string };
+  let createdUser: {
+    email: string;
+    password: string;
+    name: string;
+    role: string;
+  };
 
   // Teste de criação de usuário
   it('POST /auth/sign-up should create a user', async () => {

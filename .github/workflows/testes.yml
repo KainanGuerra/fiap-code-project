@@ -1,51 +1,44 @@
-name: CI Pipeline Tests
+name: Specs Pipeline
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches: [criacao-testes]
 
 jobs:
-  docker-tests:
+  ci:
     runs-on: ubuntu-latest
-        ##Ir em settings > Secrets and Variables > Actions > New repository secret e configurar as secrets conforme o arquivo .env
-    env: 
-      DB_HOST: db
-      DB_PORT: 5432
-      POSTGRES_DB: ${{ secrets.DB_NAME }}
-      POSTGRES_USER: ${{ secrets.DB_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_SCHEMA: "blog"
-
+    services:
+      db:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: ${DB_NAME}
+          POSTGRES_USER: ${DB_USER}
+          POSTGRES_PASSWORD: ${DB_PASSWORD}
+        options: >-
+          --health-cmd="pg_isready -U $POSTGRES_USER"
+          --health-interval=5s
+          --health-timeout=10s
+          --health-retries=5
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build and start services with Docker Compose (ignore db-test)
+      - name: Set up environment variables
         run: |
-          docker compose up -d --scale db-test=0
+          echo "DB_HOST=localhost"
+          echo "DB_PORT=5432"
+          echo "DB_USER=${{ secrets.DB_USER }}"
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+          echo "DB_NAME=${{ secrets.DB_NAME }}"
+          echo "IS_DOCKER=${{secrets.IS_DOCKER}}"
 
-          echo "Listando containers:"
-          docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+      - name: Build test image
+        run: docker build -f Dockerfile.specs -t test-runner .
 
-          echo "Aguardando PostgreSQL iniciar..."
-          until docker exec db pg_isready -U $POSTGRES_USER; do
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
-
-          echo "Criando o Schema"
-          docker exec db psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS blog;"
-
-      - name: Run migrations
-        run: docker compose exec app yarn typeorm migration:run -d ormconfig.ts
+      - name: Run lint
+        run: docker run --rm test-runner npm run lint
 
       - name: Run tests
-        run: docker compose run --rm specs
-
-      - name: Shut down Docker Compose
-        run: docker compose down
+        run: docker run --rm test-runner npm run test

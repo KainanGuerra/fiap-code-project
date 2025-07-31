@@ -1,7 +1,8 @@
 import request from 'supertest';
+
 import { e2eDescribe } from '../utils/e2e-wrapper';
-import { generateTestUser } from '../utils/generate-user';
 import { generateTestPost } from '../utils/generate-posts';
+import { generateTestUser } from '../utils/generate-user';
 
 e2eDescribe('PostController (e2e)', (app) => {
   let token: string;
