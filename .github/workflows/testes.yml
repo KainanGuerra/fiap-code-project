@@ -34,6 +34,9 @@ jobs:
             sleep 2
           done
 
+          # Cria o schema 'blog' no banco de dados
+          docker exec db psql -U $DB_USER -d $DB_NAME -c "CREATE SCHEMA IF NOT EXISTS blog;"
+
       - name: Run migrations
         run: docker compose run --rm specs yarn db:migrate
 
