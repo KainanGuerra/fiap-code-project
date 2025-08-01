@@ -1,7 +1,7 @@
 name: CI Pipeline Tests
 
 on:
-  push:
+  pull_request:
     branches:
       - criacao-testes
  

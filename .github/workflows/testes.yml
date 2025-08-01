@@ -7,38 +7,43 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
     services:
       db:
         image: postgres:15
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: ${{secrets.DB_NAME}}
-          POSTGRES_USER: ${{secrets.USER}}
-          POSTGRES_PASSWORD: ${{secrets.PASSWORD}}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
         options: >-
           --health-cmd="pg_isready -U $POSTGRES_USER"
           --health-interval=5s
           --health-timeout=10s
           --health-retries=5
-    
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up environment variables
-        run: |
-          echo "DB_HOST=db"
-          echo "DB_PORT=5432"
-          echo "DB_USER=${{ secrets.DB_USER }}"
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
-          echo "DB_NAME=${{ secrets.DB_NAME }}"
-          echo "IS_DOCKER=${{secrets.IS_DOCKER}}"
+      - name: Copy .env.test
+        run: cp .env.test .env
 
-      - name: Build test image  
+      - name: Build test image
         run: docker build -f Dockerfile.specs -t test-runner .
 
       - name: Run lint
         run: docker run --rm test-runner npm run lint
 
+      - name: Run migrations
+        run: |
+          docker run --rm --network=host \
+            --env-file .env.test \
+            test-runner npm run db:migrate
+
       - name: Run tests
-        run: docker run --rm test-runner npm run test
+        run: |
+          docker run --rm --network=host \
+            --env-file .env.test \
+            test-runner npx jest 
