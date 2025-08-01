@@ -1,49 +1,45 @@
-name: Specs Pipeline
+name: Testes com Docker Compose
 
 on:
   push:
     branches: [criacao-testes]
 
 jobs:
-  ci:
+  docker-tests:
     runs-on: ubuntu-latest
 
-    services:
-      db:
-        image: postgres:15
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        options: >-
-          --health-cmd="pg_isready -U $POSTGRES_USER"
-          --health-interval=5s
-          --health-timeout=10s
-          --health-retries=5
+    env:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      JWT_SECRET: secret_jwt_key
+      JWT_EXPIRES_IN: 1d
+      PGADMIN_DEFAULT_EMAIL: ${{secrets.USER}}
+      PGADMIN_DEFAULT_PASSWORD: ${{secrets.PASSWORD}}
+      PORT: 3000
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Copy .env.test
-        run: cp .env.test .env
+      - name: Set up Docker Compose
+        run: |
+          docker compose up -d db
 
-      - name: Build test image
-        run: docker build -f Dockerfile.specs -t test-runner .
-
-      - name: Run lint
-        run: docker run --rm test-runner npm run lint
+          echo "Aguardando PostgreSQL iniciar..."
+          until docker exec db pg_isready -U $DB_USER; do
+            echo "Esperando DB subir..."
+            sleep 2
+          done
 
       - name: Run migrations
-        run: |
-          docker run --rm --network=host \
-            --env-file .env.test \
-            test-runner npm run db:migrate
+        run: docker compose run --rm specs yarn db:migrate
 
       - name: Run tests
-        run: |
-          docker run --rm --network=host \
-            --env-file .env.test \
-            test-runner npx jest 
+        run: docker compose run --rm specs yarn test
+
+      - name: Shutdown
+        if: always()
+        run: docker compose down -v
