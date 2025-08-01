@@ -33,7 +33,7 @@
     "test:d": "yarn env-cmd -f .env.test node --inspect-brk=0.0.0.0:9229 --expose-gc --no-compilation-cache ./node_modules/.bin/jest --detectOpenHandles --forceExit --logHeapUsage --runInBand --verbose",
     "test:l": "yarn env-cmd -f .env.test jest --detectOpenHandles --detectLeaks",
     "test:w": "yarn test --watch",
-    "test:c": "yarn test --coverage",
+    "test:c": "yarn test --coverage --coverageReporters=lcov",
     "test:u": "yarn test -c jest-unit-config.js",
     "test:f": "yarn test --detectOpenHandles --runInBand -c jest-feature-config.js",
     "release": "yarn semantic-release",
