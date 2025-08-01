@@ -42,15 +42,12 @@ jobs:
 
       - name: Run tests with coverage
         run: docker compose run --rm specs yarn test:c
-
-      - name: List coverage directory
-        run: ls -al ./coverage
     
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }} 
-          file: ./coverage/lcov-report/lcov.info     
+          file: ./coverage/lcov.info     
 
       - name: Shutdown Docker Compose
         if: always()
