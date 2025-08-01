@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: ${{secrets.DB_HOST}}
+      DB_HOST: db # Usar Secrets
       DB_PORT: 5432
-      DB_NAME: ${{ secrets.DB_NAME }} 
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: postly # Usar Secrets 
+      DB_USER: postgres # Usar Secrets
+      DB_PASSWORD: postgres # Usar Secrets
       JWT_SECRET: secret_jwt_key
       JWT_EXPIRES_IN: 1d
 
@@ -43,7 +43,7 @@ jobs:
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} 
+          token: 324d0484-9057-4ac8-932e-2220ba37d0b9 
           file: ./coverage/lcov.info     
 
       - name: Shutdown Docker Compose
