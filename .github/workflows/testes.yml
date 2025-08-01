@@ -50,7 +50,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }} 
-          file: ./coverage/lcov-report/index.html       
+          file: ./coverage/lcov-report/lcov.info     
 
       - name: Shutdown Docker Compose
         if: always()
