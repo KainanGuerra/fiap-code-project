@@ -93,7 +93,6 @@ export class PublicationController {
   @Patch(':id/remove')
   async remove(@Param('id', EntityByIdPipe<PostEntity>) post: PostEntity) {
     const { strategy } = this.request.state;
-
     if (['authorized', 'inner'].includes(strategy)) {
       const data = await this.service.softRemove(post);
       return new ResponsePostDTO(data);

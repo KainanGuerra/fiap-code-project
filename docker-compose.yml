@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: db
     image: postgres:15
     environment:
       PGPORT: ${DB_PORT}
@@ -10,6 +11,11 @@ services:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $POSTGRES_USER']
+      interval: 5s
+      timeout: 10s
+      retries: 5
 
   db-test:
     image: postgres:15
@@ -19,10 +25,9 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5433:5432"    # Expose on 5433 locally to avoid conflict
+      - '5433:5432' # Expose on 5433 locally to avoid conflict
     volumes:
       - pgdata_test:/var/lib/postgresql/data
-
 
   app:
     build:
@@ -48,7 +53,7 @@ services:
       - db
 
   specs:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.specs
     command: npm run test
@@ -56,11 +61,12 @@ services:
       - .:/app
       - /app/node_modules
     ports:
-      - '3000:3000'
+      - '300:3000'
     environment:
+      - IS_DOCKER=true
       - PORT=${PORT}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=db
+      - DB_PORT=5432
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
@@ -69,11 +75,12 @@ services:
     depends_on:
       - pgadmin
       - db
+      - app
 
   pgadmin:
     image: dpage/pgadmin4
     ports:
-      - "6001:80"
+      - '6001:80'
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
@@ -86,4 +93,3 @@ volumes:
   pgdata:
   pgadmin-data:
   pgdata_test:
-

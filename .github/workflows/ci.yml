@@ -1,8 +1,8 @@
 name: Specs Pipeline
 
 on:
-  pull_request:   # Run CI on PR branches
-    branches: [main]
+  pull_request: # Run CI on PR branches
+   branches: [main]
 
 jobs:
   ci:
