@@ -1,20 +1,48 @@
 name: Specs Pipeline
 
 on:
-  pull_request: # Run CI on PR branches
-   branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  ci:
+  docker-tests:
     runs-on: ubuntu-latest
+
+    env:
+      DB_HOST: db # Usar Secrets
+      DB_PORT: 5432
+      DB_NAME: postly # Usar Secrets 
+      DB_USER: postgres # Usar Secrets
+      DB_PASSWORD: postgres # Usar Secrets
+      JWT_SECRET: secret_jwt_key
+      JWT_EXPIRES_IN: 1d
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Build test image
-        run: docker build -f Dockerfile.specs -t test-runner .
+      - name: Set up Docker Compose
+        run: |
+          docker compose up -d db
 
-      - name: Run lint
-        run: docker run --rm test-runner npm run lint
+          echo "Aguardando PostgreSQL iniciar..."
+          until docker exec db pg_isready -U $DB_USER; do
+            echo "Esperando DB subir..."
+            sleep 2
+          done
 
-      - name: Run tests
-        run: docker run --rm test-runner npm run test
+          echo "Creating Scheme"
+          docker exec db psql -U $DB_USER -d $DB_NAME -c "CREATE SCHEMA IF NOT EXISTS blog;"
+
+      - name: Run migrations
+        run: docker compose run --rm specs yarn db:migrate
+
+      - name: Run tests with coverage
+        run: docker compose run --rm specs yarn test:c
+    
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: 324d0484-9057-4ac8-932e-2220ba37d0b9 
+          file: ./coverage/lcov.info     
+
