@@ -2,7 +2,7 @@ name: Specs Pipeline
 
 on:
   push:
-    branches: [criacao-testes]
+    branches: [main]
 
 jobs:
   docker-tests:
