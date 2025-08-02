@@ -10,10 +10,32 @@ e2eDescribe('AuthController (e2e)', (app) => {
     name: string;
     role: string;
   };
-
+  //Sign-up
   // Teste de criação de usuário
-  it('POST /auth/sign-up should create a user', async () => {
-    createdUser = generateTestUser();
+  it('POST /auth/sign-up should not create a user without inner-authorization', async () => {
+    createdUser = generateTestUser('STUDENT');
+
+    const response = await request(app().getHttpServer())
+      .post('/auth/sign-up')
+      .send(createdUser);
+
+    expect(response.status).toBe(401);
+  });
+
+  it('POST /auth/sign-up should not create a user with invalid inner-authorization', async () => {
+    createdUser = generateTestUser('PROFESSOR');
+
+    const response = await request(app().getHttpServer())
+      .post('/auth/sign-up')
+      .set('inner-authorization', 'invalid_token')
+      .send(createdUser);
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toContain('Unauthorized');
+  });
+
+  it('POST /auth/sign-up should create a student', async () => {
+    createdUser = generateTestUser('STUDENT');
 
     const response = await request(app().getHttpServer())
       .post('/auth/sign-up')
@@ -29,6 +51,24 @@ e2eDescribe('AuthController (e2e)', (app) => {
     });
   });
 
+  it('POST /auth/sign-up should create professor', async () => {
+    createdUser = generateTestUser('PROFESSOR');
+
+    const response = await request(app().getHttpServer())
+      .post('/auth/sign-up')
+      .set('inner-authorization', process.env.INNER_AUTH!)
+      .send(createdUser);
+
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('accessToken');
+    expect(response.body.user).toMatchObject({
+      email: createdUser.email,
+      name: createdUser.name,
+      role: createdUser.role,
+    });
+  });
+
+  // Login
   // Teste de login com o mesmo usuário
   it('POST /auth/sign-in should sign-in with a user', async () => {
     const loginDto = {
@@ -47,4 +87,61 @@ e2eDescribe('AuthController (e2e)', (app) => {
       email: loginDto.email,
     });
   });
+
+  it('POST /auth/sign-in should not sign-in with a wrong passord', async () => {
+    const loginDto = {
+      email: createdUser.email,
+      password: "wrongPassword123",
+    };
+
+    const response = await request(app().getHttpServer())
+      .post('/auth/sign-in')
+      .send(loginDto);
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toContain('Invalid credentials');
+  });
+
+  it('POST /auth/sign-in should not sign-in with non-existing email', async () => {
+    const loginDto = {
+      email:  'nonexistent@example.com',
+      password: createdUser.password,
+    };
+
+    const response = await request(app().getHttpServer())
+      .post('/auth/sign-in')
+      .send(loginDto);
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toContain('Invalid credentials');
+  });
+
+    it('POST /auth/sign-in should not sign-in with incorrect email format', async () => {
+    const loginDto = {
+      email:  'invalid-email',
+      password: createdUser.password,
+    };
+
+    const response = await request(app().getHttpServer())
+      .post('/auth/sign-in')
+      .send(loginDto);
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toContain('Invalid credentials');
+  });
+
+  it('POST /auth/sign-in should not sign-in with non-existing email', async () => {
+    const loginDto = {
+      email:  createdUser.email,
+      password: '',
+    };
+
+    const response = await request(app().getHttpServer())
+      .post('/auth/sign-in')
+      .send(loginDto);
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toContain('Invalid credentials');
+  });
+
 });

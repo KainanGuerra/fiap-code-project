@@ -24,4 +24,21 @@ e2eDescribe('AuthController (e2e)', (app) => {
       });
     }
   });
+
+  it('GET /auth should not return a list of users w/o inner-auth', async () => {
+    const response = await request(app().getHttpServer())
+      .get('/auth')
+      
+    expect(response.status).toBe(401);
+    expect(response.body.message).toContain('Unauthorized');
+  });
+
+  it('GET /auth should not return a list of users with wrong inner-auth', async () => {
+    const response = await request(app().getHttpServer())
+      .get('/auth')
+      .set('inner-authorization', 'invalid_token')
+      
+    expect(response.status).toBe(401);
+    expect(response.body.message).toContain('Unauthorized');
+  });
 });
