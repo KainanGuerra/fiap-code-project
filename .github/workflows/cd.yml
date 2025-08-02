@@ -2,7 +2,7 @@ name: Deploy Pipeline
 
 on:
   push:
-    branches: [main]  # Only triggers on merge to main
+    branches: [main] # Only triggers on merge to main
 
 jobs:
   ci:
@@ -22,7 +22,7 @@ jobs:
 
   cd:
     name: Deploy to Render
-    needs: ci  # 👈 Only runs if CI job above passes
+    needs: ci # 👈 Only runs if CI job above passes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
