@@ -1,22 +1,39 @@
 name: Specs Pipeline
 
 on:
-  pull_request: # Run CI on PR branches
-   branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   ci:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - name: Build test image
-        run: docker build -f Dockerfile.specs -t test-runner .
 
-      - name: Create Database
-        run: docker run --rm test-runner npm run db:spawn:ci
-  
+      - name: Build images
+        run: docker-compose build
+
+      - name: Start DB
+        run: docker-compose up -d db-test
+
+      - name: Wait for DB to be ready
+        run: |
+          until docker-compose exec db-test pg_isready -U $${DB_USER}; do
+            echo "Waiting for db-test..."
+            sleep 3
+          done
+        env:
+          DB_USER: test_user
+
+      - name: Run DB spawn (migrations, setup, etc)
+        run: docker-compose run --rm specs npm run db:spawn:ci
+
       - name: Run lint
-        run: docker run --rm test-runner npm run lint
+        run: docker-compose run --rm specs npm run lint
 
       - name: Run tests
-        run: docker run --rm test-runner npm run test
+        run: docker-compose run --rm specs npm run test
+
+      - name: Tear down
+        run: docker-compose down -v
