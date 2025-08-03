@@ -1,6 +1,6 @@
 {
   "name": "fiap-post-blog",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "NestJs Project - Fiap Post-Tech",
   "author": "Kainan Guerra (https://www.linkedin.com/in/kainan-guerra)",
   "contributors": [
@@ -45,8 +45,10 @@
     "db:create-database": "ts-node ./scripts/create-database.ts",
     "db:create-schema": "ts-node ./scripts/create-schema.ts",
     "db:spawn": "yarn db:create-database && yarn db:create-schema && yarn db:migrate",
+    "db:spawn:ci": "npm run db:create-database && npm run db:create-schema && npm run db:migrate:ci",
     "db:drop": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm schema:drop -d ./ormconfig.ts",
     "db:migrate": "yarn run typeorm -d ./ormconfig.ts migration:run",
+    "db:migrate:ci": "npm run typeorm -d ./ormconfig.ts migration:run",
     "db:migration:generate": "yarn run typeorm -d ./ormconfig.ts migration:generate",
     "db:migration:create": "yarn run typeorm migration:create",
     "db:migration:revert": "yarn run typeorm -d ./ormconfig.ts migration:revert",

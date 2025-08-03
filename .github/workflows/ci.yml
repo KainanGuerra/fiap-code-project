@@ -12,8 +12,8 @@ jobs:
       - name: Build test image
         run: docker build -f Dockerfile.specs -t test-runner .
 
-      - name: Run lint
-        run: docker run --rm test-runner npm run db:spawn
+      - name: Create Database
+        run: docker run --rm test-runner npm run db:spawn:ci
   
       - name: Run lint
         run: docker run --rm test-runner npm run lint
