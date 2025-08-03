@@ -23,8 +23,6 @@ COPY . .
 # Compila o código TypeScript
 RUN npm run build
 
-RUN npm db:spawn:ci
-
 # ✅ Define variável de ambiente que seu código pode checar
 ENV IS_DOCKER=true
 
