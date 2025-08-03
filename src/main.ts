@@ -5,6 +5,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 
 import { version } from '../package.json';
@@ -43,6 +44,18 @@ async function bootstrap() {
     defaultVersion: ['1'],
   });
   app.setGlobalPrefix('fiap');
+
+  const swagger = new DocumentBuilder()
+    .setTitle('Blog Education')
+    .setDescription('The Blog Education API description')
+    .setVersion('1.0')
+    .addTag('blog-education')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swagger);
+  SwaggerModule.setup('api', app, document);
+
   const port = parseInt(config.getOrThrow('PORT'));
   await app.listen({
     port,

@@ -9,34 +9,12 @@ jobs:
     name: Run CI on main before deploy
     runs-on: ubuntu-latest
 
-    env:
-      DB_HOST: db # Usar Secrets
-      DB_PORT: 5432
-      DB_NAME: postly # Usar Secrets 
-      DB_USER: postgres # Usar Secrets
-      DB_PASSWORD: postgres # Usar Secrets
-      JWT_SECRET: secret_jwt_key
-      JWT_EXPIRES_IN: 1d
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Compose
-        run: |
-          docker compose up -d db
-
-          echo "Aguardando PostgreSQL iniciar..."
-          until docker exec db pg_isready -U $DB_USER; do
-            echo "Esperando DB subir..."
-            sleep 2
-          done
-
-          echo "Creating Scheme"
-          docker exec db psql -U $DB_USER -d $DB_NAME -c "CREATE SCHEMA IF NOT EXISTS blog;"
-
-      - name: Run migrations
-        run: docker compose run --rm specs yarn db:migrate
+      - name: Create Database
+        run: docker compose run --rm specs yarn db:spawn
 
       - name: Run tests with coverage
         run: docker compose run --rm specs yarn test:c
