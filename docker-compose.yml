@@ -27,7 +27,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '5433:5432' # Expose on 5433 locally to avoid conflict
+      - '5432:5432'
     volumes:
       - pgdata_test:/var/lib/postgresql/data
 
