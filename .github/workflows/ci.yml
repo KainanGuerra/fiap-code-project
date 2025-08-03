@@ -8,32 +8,27 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    env:
+      DB_HOST: db-test
+      DB_PORT: 5432
+      DB_NAME: postly 
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: secret_jwt_key
+      JWT_EXPIRES_IN: 1d
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+    
+      - name: Run migrations
+        run: docker compose run --rm specs yarn db:spawn
 
-      - name: Build images
-        run: docker compose build
+      - name: Run tests with coverage
+        run: docker compose run --rm specs yarn test:c
 
-      - name: Start DB
-        run: docker compose up -d db-test
-
-      - name: Wait for DB to be ready
-        run: |
-          until docker compose exec db-test pg_isready -U $${DB_USER}; do
-            echo "Waiting for db-test..."
-            sleep 3
-          done
-        env:
-          DB_USER: test_user
-
-      - name: Run DB spawn (migrations, setup, etc)
-        run: docker compose run --rm specs npm run db:spawn:ci
-
-      - name: Run lint
-        run: docker compose run --rm specs npm run lint
-
-      - name: Run tests
-        run: docker compose run --rm specs npm run test
-
-      - name: Tear down
-        run: docker compose down -v
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: 324d0484-9057-4ac8-932e-2220ba37d0b9 
+          file: ./coverage/lcov.info  
