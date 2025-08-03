@@ -29,8 +29,9 @@ const configs = <Record<string, PostgresConnectionOptions>>{
   },
   production: {
     ...config,
-    logging: false,
-    migrationsRun: true,
+    logging: true,
+    migrationsRun: false,
+    synchronize: false,
     ssl: {
       rejectUnauthorized: false,
     },
