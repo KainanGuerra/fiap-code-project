@@ -8,15 +8,6 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
-    env:
-      DB_HOST: db-test
-      DB_PORT: 5432
-      DB_NAME: postly 
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      JWT_SECRET: secret_jwt_key
-      JWT_EXPIRES_IN: 1d
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
