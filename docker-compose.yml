@@ -76,6 +76,8 @@ services:
       - DB_NAME=${DB_NAME}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=1d
+    depends_on:
+      - db-test
 
   pgadmin:
     image: dpage/pgadmin4
