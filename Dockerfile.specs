@@ -12,19 +12,19 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 # Copia arquivos de dependência
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
-# Instala dependências
-RUN npm install
+# Instala dependências com Yarn
+RUN yarn install --frozen-lockfile
 
 # Copia o restante do projeto
 COPY . .
 
 # Compila o código TypeScript
-RUN npm run build
+RUN yarn build
 
 # ✅ Define variável de ambiente que seu código pode checar
 ENV IS_DOCKER=true
 
-# Executa os testes
-CMD ["npx", "jest", "--testRegex=specs/.*\\.(spec|e2e-spec)\\.ts$"]
+# Executa os testes (caso não queira rodar automaticamente, remova a linha abaixo)
+CMD ["yarn", "jest", "--testRegex=specs/.*\\.(spec|e2e-spec)\\.ts$"]
