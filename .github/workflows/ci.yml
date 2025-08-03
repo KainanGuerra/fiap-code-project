@@ -1,26 +1,22 @@
 name: Specs Pipeline
 
 on:
-  pull_request:
-    branches: [main]
+  pull_request: # Run CI on PR branches
+   branches: [main]
 
 jobs:
   ci:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Build test image
+        run: docker build -f Dockerfile.specs -t test-runner .
 
-      - name: Create Database
-        run: docker compose run --rm specs yarn db:spawn
+      - name: Run lint
+        run: docker run --rm test-runner npm run db:spawn
+  
+      - name: Run lint
+        run: docker run --rm test-runner npm run lint
 
-      - name: Run tests with coverage
-        run: docker compose run --rm specs yarn test:c
-    
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: 324d0484-9057-4ac8-932e-2220ba37d0b9 
-          file: ./coverage/lcov.info     
-
+      - name: Run tests
+        run: docker run --rm test-runner npm run test
