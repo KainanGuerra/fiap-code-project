@@ -19,6 +19,8 @@ services:
 
   db-test:
     image: postgres:15
+    env_file:
+      - .env.test
     environment:
       PGPORT: ${DB_PORT}
       POSTGRES_DB: ${DB_NAME}
@@ -57,25 +59,23 @@ services:
       context: .
       dockerfile: Dockerfile.specs
     command: npm run test
+    env_file:
+      - .env.test
     volumes:
       - .:/app
       - /app/node_modules
     ports:
-      - '300:3000'
+      - '3000:3000'
     environment:
       - IS_DOCKER=true
       - PORT=${PORT}
-      - DB_HOST=db
-      - DB_PORT=5432
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=1d
-    depends_on:
-      - pgadmin
-      - db
-      - app
 
   pgadmin:
     image: dpage/pgadmin4
