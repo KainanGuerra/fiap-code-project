@@ -11,6 +11,11 @@ services:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   db-test:
     image: postgres:15
@@ -33,7 +38,6 @@ services:
     command: npm run start:dev
     volumes:
       - .:/app
-      - /app/node_modules
     ports:
       - '3000:3000'
     environment:
@@ -46,8 +50,10 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=1d
     depends_on:
-      - pgadmin
-      - db
+      pgadmin:
+        condition: service_started
+      db:
+        condition: service_healthy
 
   specs:
     build:

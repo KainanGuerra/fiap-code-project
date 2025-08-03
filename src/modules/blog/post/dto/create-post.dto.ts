@@ -1,8 +1,15 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsString, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 
 @Exclude()
 export class CreatePostDTO {
+  @ApiProperty({
+    description: 'Title of the post',
+    example: 'How to use NestJS with Swagger',
+    minLength: 3,
+    maxLength: 100,
+  })
   @Expose()
   @IsString({ message: 'O título deve ser uma string' })
   @IsNotEmpty({ message: 'O título é obrigatório' })
@@ -10,6 +17,12 @@ export class CreatePostDTO {
   @MaxLength(100, { message: 'O título deve ter no máximo 100 caracteres' })
   title: string;
 
+  @ApiProperty({
+    description: 'Content of the post',
+    example: 'NestJS provides great support for decorators...',
+    minLength: 10,
+    maxLength: 5000,
+  })
   @Expose()
   @IsString({ message: 'O conteúdo deve ser uma string' })
   @IsNotEmpty({ message: 'O conteúdo é obrigatório' })
