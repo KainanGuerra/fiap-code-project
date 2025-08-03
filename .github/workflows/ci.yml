@@ -13,13 +13,7 @@ jobs:
         uses: actions/checkout@v4
     
       - name: Run migrations
-        run: docker compose run --rm specs yarn db:spawn
+        run: docker compose --env-file .env.test run --rm specs yarn db:spawn
 
       - name: Run tests with coverage
-        run: docker compose run --rm specs yarn test:c
-
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: 324d0484-9057-4ac8-932e-2220ba37d0b9 
-          file: ./coverage/lcov.info  
+        run: docker compose --env-file .env.test run --rm specs yarn test:c
