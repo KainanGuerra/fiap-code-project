@@ -12,6 +12,14 @@ import {
   Query,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { FastifyRequest } from 'fastify';
 
 import { StateRole } from '@App/@types/FastifyRequest';
@@ -35,6 +43,32 @@ export class PublicationController {
     @Inject(REQUEST) private request: FastifyRequest,
   ) {}
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get a paginated list of posts' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of posts per page (default 15)',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'otherFilters',
+    required: false,
+    type: GetPostsDTO,
+    description: 'Additional query filters',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of posts',
+    type: ResponseManyPostsDTO,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
   @Get()
   async find(
     @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
@@ -52,6 +86,16 @@ export class PublicationController {
     throw new ForbiddenException();
   }
 
+  @ApiOperation({ summary: 'Get a single post by ID' })
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', type: String, description: 'Post ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The post found',
+    type: ResponsePostDTO,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Post not found' })
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const { strategy } = this.request.state;
@@ -62,6 +106,15 @@ export class PublicationController {
     throw new ForbiddenException();
   }
 
+  @ApiOperation({ summary: 'Create a new post' })
+  @ApiBearerAuth()
+  @ApiBody({ type: CreatePostDTO })
+  @ApiResponse({
+    status: 201,
+    description: 'Post created successfully',
+    type: ResponsePostDTO,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
   @Post()
   async create(@Body() payload: CreatePostDTO) {
     const { strategy, role } = this.request.state;
@@ -77,6 +130,17 @@ export class PublicationController {
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update a post by ID' })
+  @ApiParam({ name: 'id', type: String, description: 'Post ID' })
+  @ApiBody({ type: UpdatePostDTO })
+  @ApiResponse({
+    status: 200,
+    description: 'Post updated successfully',
+    type: ResponsePostDTO,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Post not found' })
+  @ApiBearerAuth()
   async update(
     @Param('id', EntityByIdPipe<PostEntity>) post: PostEntity,
     @Body() payload: UpdatePostDTO,
@@ -90,6 +154,16 @@ export class PublicationController {
     throw new ForbiddenException();
   }
 
+  @ApiOperation({ summary: 'Soft delete (remove) a post by ID' })
+  @ApiParam({ name: 'id', type: String, description: 'Post ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Post removed successfully',
+    type: ResponsePostDTO,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Post not found' })
+  @ApiBearerAuth()
   @Patch(':id/remove')
   async remove(@Param('id', EntityByIdPipe<PostEntity>) post: PostEntity) {
     const { strategy } = this.request.state;
