@@ -46,10 +46,10 @@ async function bootstrap() {
   app.setGlobalPrefix('fiap');
 
   const swagger = new DocumentBuilder()
-    .setTitle('Blog Education')
+    .setTitle('Postly Blog Education')
     .setDescription('The Blog Education API description')
     .setVersion('1.0')
-    .addTag('blog-education')
+    .addTag('Documentation API')
     .addBearerAuth()
     .build();
 
