@@ -1,11 +1,10 @@
-# 📘 Project Documentation
+# 📘 Public Documentation
 
-## 📄 Official Documentation
+## 📄 Internal Docs
 
 For additional details including KPIs, authentication credentials, and business rules, refer to the internal documentation:
 
-🔗 [**Google Docs - Project Specs**](https://docs.google.com/document/d/1D_wMyvKGlw9HnF-5C-0MAu9vJvirmhUT/edit?usp=sharing&ouid=118228888649533221690&rtpof=true&sd=true)
-
+🔗 [**Google Docs (Fiap Tech Challenge)**](https://docs.google.com/document/d/1D_wMyvKGlw9HnF-5C-0MAu9vJvirmhUT/edit?usp=sharing&ouid=118228888649533221690&rtpof=true&sd=true)
 
 ## 🌐 Swagger API (Production)
 
@@ -13,7 +12,6 @@ You can view the full API documentation with all available endpoints, request bo
 
 🔗 [**Swagger Docs (Production)**](https://fiap-code-project.onrender.com/api)
 
-> ⚠️ Replace the link above with the actual URL where Swagger is served in production.
 
 ---
 
@@ -66,8 +64,8 @@ src/
 ├── auth/              # Authentication logic (sign-in, sign-up)
 ├── posts/             # Post creation, listing, editing
 ├── users/             # User entity, roles, and management
-├── common/       # Shared utilities, guards, pipes, interceptors
-├── main.ts           # Entry point
+├── common/            # Shared utilities, guards, pipes, interceptors
+├── main.ts            # Entry point
 └── app.module.ts      # Root module
 ```
 
