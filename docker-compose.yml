@@ -41,6 +41,8 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     command: npm run start:dev
+    env_file:
+      - .env
     volumes:
       - .:/app
     ports:
