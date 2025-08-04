@@ -21,7 +21,7 @@ const config = <PostgresConnectionOptions>{
 const configs = <Record<string, PostgresConnectionOptions>>{
   development: {
     ...config,
-    logging: true,
+    logging: ['error', 'query'],
     logger: 'debug',
     migrationsRun: false,
     synchronize: false,

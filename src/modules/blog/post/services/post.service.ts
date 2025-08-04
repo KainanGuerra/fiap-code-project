@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { instanceToInstance } from 'class-transformer';
-import { Like, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 import { UserEntity } from '@Modules/blog/auth/user.entity';
 
@@ -40,16 +40,12 @@ export class PostService {
     if (instanceToInstance(query)?.term) {
       term = instanceToInstance(query)?.term;
     }
+    const where = term
+      ? [{ title: ILike(`%${term}%`) }, { content: ILike(`%${term}%`) }]
+      : {};
 
     const [posts, count] = await this.repo.findAndCount({
-      where: [
-        {
-          ...(term ? { title: Like(term) } : {}),
-        },
-        {
-          ...(term ? { content: Like(term) } : {}),
-        },
-      ],
+      where,
       take: limit,
       skip: offset,
     });
