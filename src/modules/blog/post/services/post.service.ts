@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { instanceToInstance } from 'class-transformer';
@@ -54,6 +54,10 @@ export class PostService {
   }
 
   findOne(id: string) {
-    return this.repo.findOneByOrFail({ id });
+    try {
+      return this.repo.findOneByOrFail({ id });
+    } catch (err) {
+      throw new BadRequestException('Entity not accessible or not found');
+    }
   }
 }
