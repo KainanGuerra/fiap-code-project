@@ -1,15 +1,17 @@
-import { ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 
 import { version, name } from '../../../../package.json';
 
 @Exclude()
 export class StatusDto {
-  @ApiResponseProperty()
+  @ApiProperty({ description: 'Application name', example: name })
   @Expose()
   name: string;
 
-  @ApiResponseProperty({
+  @ApiProperty({
+    description: 'Application version',
+    example: version,
     type: 'string',
   })
   @Expose()

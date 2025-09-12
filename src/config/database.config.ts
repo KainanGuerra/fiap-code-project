@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import path from 'path';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
@@ -22,15 +21,16 @@ const config = <PostgresConnectionOptions>{
 const configs = <Record<string, PostgresConnectionOptions>>{
   development: {
     ...config,
-    logging: true,
+    logging: ['error', 'query'],
     logger: 'debug',
     migrationsRun: false,
     synchronize: false,
   },
   production: {
     ...config,
-    logging: false,
-    migrationsRun: true,
+    logging: true,
+    migrationsRun: false,
+    synchronize: false,
     ssl: {
       rejectUnauthorized: false,
     },

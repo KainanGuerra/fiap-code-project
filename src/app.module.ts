@@ -51,9 +51,9 @@ import { ClassSerializerGuardInterceptor } from '@Shared/interceptors/class.seri
         synchronize: false,
         namingStrategy: new SnakeNamingStrategy(),
         ssl:
-          process.env.DB_SSL === 'true'
-            ? { rejectUnauthorized: false }
-            : undefined,
+          process.env.NODE_ENV !== 'production'
+            ? undefined
+            : { rejectUnauthorized: false },
       }),
     }),
   ],

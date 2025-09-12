@@ -12,70 +12,61 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U $POSTGRES_USER']
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
-      timeout: 10s
-      retries: 5
+      timeout: 5s
+      retries: 2
 
   db-test:
     image: postgres:15
+    env_file:
+      - .env.test
     environment:
       PGPORT: ${DB_PORT}
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '5433:5432' # Expose on 5433 locally to avoid conflict
+      - '5432:5432'
     volumes:
       - pgdata_test:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 2
 
   app:
     build:
       context: .
       dockerfile: Dockerfile.dev
     command: npm run start:dev
+    env_file:
+      - .env
     volumes:
       - .:/app
-      - /app/node_modules
     ports:
       - '3000:3000'
-    environment:
-      - PORT=${PORT}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=1d
     depends_on:
-      - pgadmin
-      - db
+      pgadmin:
+        condition: service_started
+      db:
+        condition: service_healthy
 
   specs:
     build:
       context: .
       dockerfile: Dockerfile.specs
     command: npm run test
+    env_file:
+      - .env.test
     volumes:
       - .:/app
       - /app/node_modules
     ports:
-      - '300:3000'
-    environment:
-      - IS_DOCKER=true
-      - PORT=${PORT}
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=1d
+      - '3000:3000'
     depends_on:
-      - pgadmin
-      - db
-      - app
+      - db-test
 
   pgadmin:
     image: dpage/pgadmin4
