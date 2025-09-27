@@ -45,7 +45,14 @@ export class PostService {
       : {};
 
     const [posts, count] = await this.repo.findAndCount({
-      where,
+      where: [
+        {
+          ...(term ? { title: ILike(`%${term}%`) } : {}),
+        },
+        {
+          ...(term ? { content: ILike(`%${term}%`) } : {}),
+        },
+      ],
       take: limit,
       skip: offset,
     });

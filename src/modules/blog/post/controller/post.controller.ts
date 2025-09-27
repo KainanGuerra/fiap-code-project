@@ -49,7 +49,7 @@ export class PublicationController {
     name: 'limit',
     required: false,
     type: Number,
-    description: 'Number of posts per page (default 15)',
+    description: 'Number of posts per page (default 10)',
   })
   @ApiQuery({
     name: 'page',
@@ -71,7 +71,7 @@ export class PublicationController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @Get()
   async find(
-    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query() query: GetPostsDTO,
   ) {
