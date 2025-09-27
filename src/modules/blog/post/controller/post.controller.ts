@@ -37,7 +37,7 @@ export class PublicationController {
 
   @Get()
   async find(
-    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query() query: GetPostsDTO,
   ) {
