@@ -1,6 +1,6 @@
 # Dockerfile.specs
 
-FROM node:20-alpine
+FROM node:22-alpine
 
 # Instala dependências do sistema necessárias para Jest e TypeORM
 RUN apk add --no-cache \
