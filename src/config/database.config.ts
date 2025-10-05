@@ -45,6 +45,5 @@ const configs = <Record<string, PostgresConnectionOptions>>{
 };
 
 export const databaseConfig = (): PostgresConnectionOptions => {
-  console.debug(process.env.NODE_ENV);
   return configs[process.env.NODE_ENV ?? 'development'];
 };

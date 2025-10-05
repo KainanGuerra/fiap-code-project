@@ -36,23 +36,37 @@ export class PostService {
   ) {
     const { limit, page } = paginate;
     const offset = (page - 1) * limit;
-    let term: string | undefined;
-    if (instanceToInstance(query)?.term) {
-      term = instanceToInstance(query)?.term;
+
+    const q = query ? instanceToInstance(query) : {};
+
+    // Relation filter for author
+    let joinConditions: Record<string, any> = {};
+
+    if (q.author) {
+      joinConditions = {
+        user: { email: q.author }
+      };
     }
-    const where = term
-      ? [{ title: ILike(`%${term}%`) }, { content: ILike(`%${term}%`) }]
-      : {};
+
+    // Build "OR" where for term search, apply author filter to both
+    const where: any[] = [];
+
+    if (q.term) {
+      // term exists → OR logic for title/content
+      where.push(
+        { title: ILike(`%${q.term}%`), ...joinConditions },
+        { content: ILike(`%${q.term}%`), ...joinConditions },
+      );
+    } else if (q.author) {
+      // only author filter without term
+      where.push({ ...joinConditions });
+    } else {
+      // no filters → all posts
+      where.push({});
+    }
 
     const [posts, count] = await this.repo.findAndCount({
-      where: [
-        {
-          ...(term ? { title: ILike(`%${term}%`) } : {}),
-        },
-        {
-          ...(term ? { content: ILike(`%${term}%`) } : {}),
-        },
-      ],
+      where,
       take: limit,
       skip: offset,
     });

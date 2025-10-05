@@ -1,6 +1,6 @@
-import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, MinLength } from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 
 @Exclude()
 export class GetPostsDTO {
@@ -13,4 +13,13 @@ export class GetPostsDTO {
   @MinLength(3)
   @Expose()
   term?: string;
+
+  @ApiProperty({
+    description: 'Email of the author of the posts',
+    example: 'john.doe@gmail.com',
+  })
+  @IsOptional()
+  @IsEmail()
+  @Expose()
+  author?: string;
 }
