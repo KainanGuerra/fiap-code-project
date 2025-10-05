@@ -57,6 +57,9 @@ export class PostService {
       skip: offset,
     });
 
+    console.log(paginate, { limit, page, offset });
+    
+
     return { page, limit, posts, totalPosts: count };
   }
 
