@@ -44,7 +44,7 @@ export class PostService {
 
     if (q.author) {
       joinConditions = {
-        user: { email: q.author }
+        user: { email: q.author },
       };
     }
 
@@ -69,6 +69,7 @@ export class PostService {
       where,
       take: limit,
       skip: offset,
+      order: { createdAt: 'DESC' },
     });
 
     return { page, limit, posts, totalPosts: count };
