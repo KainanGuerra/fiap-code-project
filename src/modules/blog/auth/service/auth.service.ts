@@ -14,7 +14,9 @@ import { InternalUserInformation } from '@Shared/interfaces/auth.interface';
 
 import { StatusUser } from '../costants/status.user';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { ListUsersDto } from '../dto/list-users.dto';
 import { ResponseUserDTO } from '../dto/response-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserEntity } from '../user.entity';
 
 @Injectable()
@@ -27,13 +29,16 @@ export class AuthService {
     private readonly logger: Logger,
   ) {}
 
-  async register(data: CreateUserDto) {
+  async register(data: CreateUserDto, createdBy?: UserEntity) {
     try {
       const hashedPassword = await hash(data.password, 10);
       const user = await this.repo.save({
         ...data,
         password: hashedPassword,
         status: StatusUser.PENDING,
+        metadata: {
+          createdBy: createdBy ? createdBy.email : null,
+        },
       });
       return this.createToken(user);
     } catch (err) {
@@ -42,12 +47,51 @@ export class AuthService {
     }
   }
 
-  list() {
-    return this.repo.find();
+  async update(user: UserEntity, data: UpdateUserDto) {
+    delete (data as any).email;
+
+    if (data.password) {
+      data.password = await hash(data.password, 10);
+    }
+
+    const updatedUser = this.repo.merge(user, data);
+
+    try {
+      return await this.repo.save(updatedUser);
+    } catch (err) {
+      this.logger.error(`[UPDATE USER ERROR]: ${JSON.stringify(err)}`);
+      throw new BadRequestException(`Error updating user: ${err.message}`);
+    }
+  }
+
+  async list(paginate: { limit: number; page: number }, query: ListUsersDto) {
+    const { limit, page } = paginate;
+    const skip = (page - 1) * limit;
+
+    try {
+      const [users, total] = await this.repo.findAndCount({
+        where: {
+          ...query,
+        },
+        skip,
+        take: limit,
+        order: { createdAt: 'DESC' },
+      });
+
+      return { page, limit, users, totalUsers: total };
+    } catch (err) {
+      this.logger.error(`[LIST USER ERROR]: ${JSON.stringify(err)}`);
+      throw new BadRequestException(`Error listing users: ${err.message}`);
+    }
   }
 
   async remove(data: UserEntity) {
-    await this.repo.softDelete(data.id);
+    try {
+      await this.repo.softDelete(data.id);
+    } catch (err) {
+      this.logger.error(`[REMOVE USER ERROR]: ${JSON.stringify(err)}`);
+      throw new BadRequestException(`Error removing user: ${err.message}`);
+    }
   }
 
   async login(email: string, password: string) {
